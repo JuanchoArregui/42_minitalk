@@ -3,17 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   server.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jarregui <jarregui@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jarregui <jarregui@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 13:35:33 by jarregui          #+#    #+#             */
-/*   Updated: 2024/07/10 18:12:25 by jarregui         ###   ########.fr       */
+/*   Updated: 2024/07/10 20:13:56 by jarregui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <signal.h>
-#include <unistd.h>
-
+#include "minitalk.h"
 
 static void	action(int sig, siginfo_t *info, void *context)
 {
