@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: jarregui <jarregui@student.42madrid.com    +#+  +:+       +#+         #
+#    By: jarregui <jarregui@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/10 19:32:00 by jarregui          #+#    #+#              #
-#    Updated: 2024/07/10 20:27:39 by jarregui         ###   ########.fr        #
+#    Updated: 2024/07/11 14:04:48 by jarregui         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ include libs/colors.mk
 
 # VARIABLES DECLARATION:
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror 
 PROY_NAME =	MINITALK
 EXEC_FILE_SERVER_NAME = server
 EXEC_FILE_CLIENT_NAME = client
