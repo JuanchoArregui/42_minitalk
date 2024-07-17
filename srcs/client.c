@@ -6,11 +6,47 @@
 /*   By: jarregui <jarregui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 17:31:44 by jarregui          #+#    #+#             */
-/*   Updated: 2024/07/11 18:44:52 by jarregui         ###   ########.fr       */
+/*   Updated: 2024/07/17 15:41:47 by jarregui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
+
+void	check_pid_str_is_digit(const char *s)
+{
+	size_t	i;
+
+	i = 0;
+	while (s[i])
+	{
+		if (!ft_isdigit(s[i]))
+		{
+			if (DEBUG)
+				ft_printf("\nERROR: string fot PID must be just numbers");
+			exit(0);
+		}
+		i++;
+	}
+}
+
+void	check_pid_is_listening(pid_t server_pid)
+{
+	if (kill(server_pid, SIGUSR1) == -1) {
+		if (DEBUG)
+			ft_printf("\nERROR: provided PID doesnt exist or not listening");
+		exit(0);
+	} 
+	else
+	{
+		ft_printf("\nSERVER with PID: %d is listening", (int)server_pid);
+	}
+}
+
+
+
+
+
+
 
 void	action(int sig)
 {
@@ -33,7 +69,7 @@ void	send_end_signal(int pid)
 	while (i--)
 	{
 		kill(pid, SIGUSR1);
-		usleep(100);
+		usleep(MICROSECS);
 	}
 }
 
@@ -56,7 +92,7 @@ void	send_char(int pid, char c)
 			if (DEBUG)
 				ft_printf("%c", '0');
 		}
-		usleep(100);
+		usleep(MICROSECS);
 	}
 	if (DEBUG)
 			ft_printf("%c", ' ');
@@ -67,7 +103,7 @@ void	send_string(int pid, char *str)
 	char	c;
 
 	if (DEBUG)
-		ft_printf("\n Sending bits for the string: ");
+		ft_printf("\nSending bits:\n");
 	while (*str)
 	{
 		c = *str++;
@@ -78,23 +114,30 @@ void	send_string(int pid, char *str)
 
 int	main(int argc, char **argv)
 {
-	int pid;
+	pid_t server_pid;
 	
 	if (DEBUG)
-		ft_printf("Debug mode is ON\n");
+		ft_printf("\nStarting CLIENT");
 	if (argc != 3 || !ft_strlen(argv[2]))
 		return (1);
+	check_pid_str_is_digit(argv[1]);
+	server_pid = (pid_t)ft_atoi(argv[1]);
+	check_pid_is_listening(server_pid);
 
-	pid = ft_atoi(argv[1]);
 
-	ft_printf("Starting CLIENT");
+
+
+	
 	ft_printf("\nTrying to send %d characters from the string: \"%s\"", ft_strlen(argv[2]), argv[2]);
-	ft_printf("\nto the SERVER with PID: %d\n", pid);
+	
 	
 	signal(SIGUSR1, action);
 	signal(SIGUSR2, action);
-	send_string(pid, argv[2]);
+	send_string(server_pid, argv[2]);
 	while (1)
 		pause();
 	return (0);
 }
+
+//Info sobre manipulación de bits:
+//https://nomadaselectronicos.wordpress.com/2015/03/05/manipulacion-de-bits-en-c-y-aplicaciones/
