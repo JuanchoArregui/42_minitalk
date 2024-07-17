@@ -6,39 +6,42 @@
 /*   By: jarregui <jarregui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 13:35:33 by jarregui          #+#    #+#             */
-/*   Updated: 2024/07/17 14:14:17 by jarregui         ###   ########.fr       */
+/*   Updated: 2024/07/17 16:59:24 by jarregui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-static void	action(int sig, siginfo_t *info, void *context)
+void	handle_signal(int sig, siginfo_t *info, void *context)
 {
-	static int				i = 0;
+	static int				bit_index = 0;
 	static pid_t			client_pid = 0;
-	static unsigned char	c = 0;
+	static unsigned char	current_char = 0;
 
 	(void)context;
 	if (!client_pid)
 		client_pid = info->si_pid;
-	c |= (sig == SIGUSR2);
-	if (++i == 8)
+	current_char |= (sig == SIGUSR2);
+	bit_index++;
+	if (bit_index == 8)
 	{
-		i = 0;
-		if (!c)
+		if (current_char == END_TRANSMISSION)
 		{
+			ft_printf("\n");
 			kill(client_pid, SIGUSR2);
-			client_pid = 0;
 			return ;
 		}
-		// ft_putchar_fd(c, 1);
-		putchar(c);
-
-		c = 0;
-		kill(client_pid, SIGUSR1);
+		else
+		{
+			ft_printf("%c", current_char);
+			kill(client_pid, SIGUSR1);
+		}
+		bit_index = 0;
+		client_pid = 0;
+		current_char = 0;
 	}
 	else
-		c <<= 1;
+		current_char <<= 1;
 }
 
 int main (void)
@@ -46,8 +49,10 @@ int main (void)
 	struct sigaction	s_sigaction;
 
 	printf("Server PID: %d\n", getpid());
+	if (DEBUG)
+		ft_printf("Listening...");
 	s_sigaction.sa_flags = SA_SIGINFO;
-	s_sigaction.sa_sigaction = action;
+	s_sigaction.sa_sigaction = handle_signal;
 	sigaction(SIGUSR1, &s_sigaction, 0);
 	sigaction(SIGUSR2, &s_sigaction, 0);
 	while (1)

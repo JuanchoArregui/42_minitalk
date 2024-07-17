@@ -6,7 +6,7 @@
 /*   By: jarregui <jarregui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 17:31:44 by jarregui          #+#    #+#             */
-/*   Updated: 2024/07/17 15:41:47 by jarregui         ###   ########.fr       */
+/*   Updated: 2024/07/17 16:53:57 by jarregui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,8 @@ void	check_pid_is_listening(pid_t server_pid)
 	} 
 	else
 	{
-		ft_printf("\nSERVER with PID: %d is listening", (int)server_pid);
+		if (DEBUG)
+			ft_printf("\nSERVER with PID: %d is listening", (int)server_pid);
 	}
 }
 
@@ -52,6 +53,9 @@ void	action(int sig)
 {
 	static int	received = 0;
 
+	ft_printf("****"); 
+
+
 	if (sig == SIGUSR1)
 		++received;
 	else
@@ -61,19 +65,7 @@ void	action(int sig)
 	}
 }
 
-void	send_end_signal(int pid)
-{
-	int		i;
-
-	i = 8;
-	while (i--)
-	{
-		kill(pid, SIGUSR1);
-		usleep(MICROSECS);
-	}
-}
-
-void	send_char(int pid, char c)
+void	send_char_signals(pid_t server_pid, char c)
 {
 	int		i;
 
@@ -82,20 +74,30 @@ void	send_char(int pid, char c)
 	{
 		if (c >> i & 1)
 		{
-			kill(pid, SIGUSR2);
+			kill(server_pid, SIGUSR2);
 			if (DEBUG)
 				ft_printf("%c", '1');
 		}
 		else
 		{
-			kill(pid, SIGUSR1);
+			kill(server_pid, SIGUSR1);
 			if (DEBUG)
 				ft_printf("%c", '0');
 		}
 		usleep(MICROSECS);
 	}
 	if (DEBUG)
-			ft_printf("%c", ' ');
+		ft_printf("%c", ' ');
+}
+
+void	send_end_signal(pid_t server_pid)
+{
+
+	ft_printf("\nantes de enviar señal END TRASMISION");
+
+	send_char_signals(server_pid, END_TRANSMISSION);
+
+	ft_printf("\nenviada señal END TRASMISION");
 }
 
 void	send_string(int pid, char *str)
@@ -107,7 +109,7 @@ void	send_string(int pid, char *str)
 	while (*str)
 	{
 		c = *str++;
-		send_char(pid, c);
+		send_char_signals(pid, c);
 	}
 	send_end_signal(pid);
 }
