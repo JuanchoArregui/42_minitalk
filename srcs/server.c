@@ -6,7 +6,7 @@
 /*   By: jarregui <jarregui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 13:35:33 by jarregui          #+#    #+#             */
-/*   Updated: 2024/07/18 16:34:57 by jarregui         ###   ########.fr       */
+/*   Updated: 2024/08/07 14:40:51 by jarregui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,9 @@ void	print_bit_signal(int bit_index, int signal)
 		if (bit_index == 0)
 			write(1, "\n", 1);
 		if (signal == SIGUSR1)
-			write(1, "0", 1);
-		else if (signal == SIGUSR2)
 			write(1, "1", 1);
+		else if (signal == SIGUSR2)
+			write(1, "0", 1);
 	}
 }
 
@@ -63,6 +63,8 @@ int	main(void)
 		pause();
 	return (0);
 }
+
+//make CFLAGS+=" -DDEBUG=1"
 
 //Info sobre minitalk:  
 //https://medium.com/@oduwoledare/42-minitalk-explained-5b236adc2c24
