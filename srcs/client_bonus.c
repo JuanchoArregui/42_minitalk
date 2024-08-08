@@ -1,16 +1,45 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.c                                           :+:      :+:    :+:   */
+/*   client_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jarregui <jarregui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 17:31:44 by jarregui          #+#    #+#             */
-/*   Updated: 2024/07/18 16:26:26 by jarregui         ###   ########.fr       */
+/*   Updated: 2024/08/08 11:49:10 by jarregui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
+
+pid_t	check_pid(const char *pid_string)
+{
+	size_t	i;
+	pid_t	server_pid;
+
+	i = 0;
+	while (pid_string[i])
+	{
+		if (!ft_isdigit(pid_string[i]))
+		{
+			if (DEBUG)
+				ft_printf("\n❌ ERROR: string fot PID must be just numbers\n");
+			exit(0);
+		}
+		i++;
+	}
+	server_pid = ft_atoi(pid_string);
+	if (kill(server_pid, SIGUSR1) == -1)
+	{
+		if (DEBUG)
+			ft_printf("\n❌ ERROR: PID doesnt exist or not listening\n");
+		exit(0);
+	} 
+	else
+		if (DEBUG)
+			ft_printf("\n✅ SERVER with PID: %d is listening\n", (int)server_pid);
+	return (server_pid);
+}
 
 void	send_signal(int pid, unsigned char character)
 {
@@ -39,10 +68,10 @@ int	main(int argc, char *argv[])
 
 	if (argc != 3)
 	{
-		ft_printf("Usage: %s <pid> <message>\n", argv[0]);
+		ft_printf("Error. Usage: ./client <server pid> <message>\n");
 		exit(0);
 	}
-	server_pid = ft_atoi(argv[1]);
+	server_pid = check_pid(argv[1]);
 	message = argv[2];
 	i = 0;
 	while (message[i])
@@ -51,40 +80,6 @@ int	main(int argc, char *argv[])
 	return (0);
 }
 
-
-
-
-
-// void	check_pid_str_is_digit(const char *s)
-// {
-// 	size_t	i;
-
-// 	i = 0;
-// 	while (s[i])
-// 	{
-// 		if (!ft_isdigit(s[i]))
-// 		{
-// 			if (DEBUG)
-// 				ft_printf("\nERROR: string fot PID must be just numbers");
-// 			exit(0);
-// 		}
-// 		i++;
-// 	}
-// }
-
-// void	check_pid_is_listening(pid_t server_pid)
-// {
-// 	if (kill(server_pid, SIGUSR1) == -1) {
-// 		if (DEBUG)
-// 			ft_printf("\nERROR: provided PID doesnt exist or not listening");
-// 		exit(0);
-// 	} 
-// 	else
-// 	{
-// 		if (DEBUG)
-// 			ft_printf("\nSERVER with PID: %d is listening", (int)server_pid);
-// 	}
-// }
 
 
 

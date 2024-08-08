@@ -6,38 +6,17 @@
 /*   By: jarregui <jarregui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 13:35:33 by jarregui          #+#    #+#             */
-/*   Updated: 2024/07/18 16:39:45 by jarregui         ###   ########.fr       */
+/*   Updated: 2024/08/08 11:46:31 by jarregui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-void	handle_signal(int signal)
-{
-	static unsigned char	current_char = 0;
-	static int				bit_index = 0;
-
-	current_char |= (signal == SIGUSR1);
-	bit_index++;
-	if (bit_index == 8)
-	{
-		if (current_char == END_TRANSMISSION)
-			write(1, "\n", 1);
-		else
-			write(1, &current_char, 1);
-		bit_index = 0;
-		current_char = 0;
-	}
-	else
-		current_char <<= 1;
-}
-
-
 void	handle_signal(int sig, siginfo_t *info, void *context)
 {
+	static unsigned char	current_char = 0;
 	static int				bit_index = 0;
 	static pid_t			client_pid = 0;
-	static unsigned char	current_char = 0;
 
 	(void)context;
 	if (!client_pid)
@@ -68,10 +47,6 @@ void	handle_signal(int sig, siginfo_t *info, void *context)
 		current_char <<= 1;
 }
 
-
-
-
-
 int main (void)
 {
 	struct sigaction	s_sigaction;
@@ -89,3 +64,5 @@ int main (void)
 		pause();
 	return (0);
 }
+
+//make bonus CFLAGS+=" -DDEBUG=1"
