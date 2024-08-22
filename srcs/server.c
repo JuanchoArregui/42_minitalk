@@ -6,7 +6,7 @@
 /*   By: jarregui <jarregui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 13:35:33 by jarregui          #+#    #+#             */
-/*   Updated: 2024/08/08 13:16:44 by jarregui         ###   ########.fr       */
+/*   Updated: 2024/08/21 09:48:21 by jarregui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,13 @@ int	main(void)
 }
 
 //make CFLAGS+=" -DDEBUG=1"
+
+//Info sobre manipulación de bits:
+//https://nomadaselectronicos.wordpress.com/2015/03/05/manipulacion-de-bits-en-c-y-aplicaciones/
+
+
+
+
 
 //Info sobre minitalk:  
 //https://medium.com/@oduwoledare/42-minitalk-explained-5b236adc2c24

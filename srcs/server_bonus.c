@@ -6,11 +6,24 @@
 /*   By: jarregui <jarregui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 13:35:33 by jarregui          #+#    #+#             */
-/*   Updated: 2024/08/08 11:46:31 by jarregui         ###   ########.fr       */
+/*   Updated: 2024/08/22 13:27:58 by jarregui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
+
+void	print_bit_signal(int bit_index, int signal)
+{
+	if (DEBUG)
+	{
+		if (bit_index == 0)
+			write(1, "\n", 1);
+		if (signal == SIGUSR1)
+			write(1, "1", 1);
+		else if (signal == SIGUSR2)
+			write(1, "0", 1);
+	}
+}
 
 void	handle_signal(int sig, siginfo_t *info, void *context)
 {
@@ -21,13 +34,15 @@ void	handle_signal(int sig, siginfo_t *info, void *context)
 	(void)context;
 	if (!client_pid)
 		client_pid = info->si_pid;
-	current_char |= (sig == SIGUSR2) << (7 - bit_index);
+	kill(client_pid, SIGUSR1); //confirmamos recepción bit
+
+	print_bit_signal(bit_index, sig);
+	current_char |= (sig == SIGUSR1);
 	bit_index++;
 	if (bit_index == 8)
 	{
 		if (current_char == END_TRANSMISSION)
 		{
-			// ft_printf("\n");
 			write(1, "\n", 1);
 			kill(client_pid, SIGUSR2);
 			client_pid = 0;
@@ -36,9 +51,6 @@ void	handle_signal(int sig, siginfo_t *info, void *context)
 		else
 		{
 			write(1, &current_char, 1);
-			
-			// ft_printf("%c", current_char);
-			kill(client_pid, SIGUSR1);
 		}
 		bit_index = 0;
 		current_char = 0;
