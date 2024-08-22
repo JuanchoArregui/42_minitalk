@@ -6,7 +6,7 @@
 /*   By: jarregui <jarregui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 13:35:33 by jarregui          #+#    #+#             */
-/*   Updated: 2024/08/22 13:27:58 by jarregui         ###   ########.fr       */
+/*   Updated: 2024/08/22 15:20:16 by jarregui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ void	handle_signal(int sig, siginfo_t *info, void *context)
 		}
 		else
 		{
+			write(1, " - ", 3);
 			write(1, &current_char, 1);
 		}
 		bit_index = 0;

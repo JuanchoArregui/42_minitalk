@@ -6,7 +6,7 @@
 /*   By: jarregui <jarregui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 17:31:44 by jarregui          #+#    #+#             */
-/*   Updated: 2024/08/22 14:46:40 by jarregui         ###   ########.fr       */
+/*   Updated: 2024/08/22 15:25:44 by jarregui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,22 +101,25 @@ void	send_current_bit_signal()
 		check = kill(com.server_pid, SIGUSR2);
 	check_server(check);
 	print_bit(current_bit);
+
+	com.bit_index--;
+	// Si todos los bits de un carácter han sido enviados, pasar al siguiente carácter
+	if (com.bit_index < 0)
+	{
+		com.bit_index = 7;
+		com.char_index++;
+	}
+
 }
 
 void	handle_read_receipt(int signal)
 {
 	if (signal == SIGUSR1)
 	{
-		//Señal de confirmación de bit
-		com.bit_index--;
-		if (DEBUG)
-			ft_printf("Received confirmation\n");
-		// Si todos los bits de un carácter han sido enviados, pasar al siguiente carácter
-        if (com.bit_index < 0)
-		{
-			com.bit_index = 7;
-			com.char_index++;
-		}
+		//Señal de confirmación de recepción de bit
+		if (com.char_index < com.char_length)	//Checar si hay que checar esto si el server envía señal única al fianl
+			send_current_bit_signal();
+		
 	}
 	else if (signal == SIGUSR2)
 	{
@@ -143,14 +146,12 @@ int	main(int argc, char *argv[])
 	com.bit_index = 7;
 	signal(SIGUSR1, handle_read_receipt);
 	signal(SIGUSR2, handle_read_receipt);
-
+	if (DEBUG)
+		ft_printf("Client starting bit-by-bit message sending ✉️\n");
 	send_current_bit_signal();
 
 	while (com.char_index < com.char_length)
-	{
 		pause();
-		send_current_bit_signal();
-	}
 		
 	return (0);
 }
@@ -162,109 +163,5 @@ int	main(int argc, char *argv[])
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// void	action(int sig)
-// {
-// 	static int	received = 0;
-
-// 	ft_printf("****"); 
-
-
-// 	if (sig == SIGUSR1)
-// 		++received;
-// 	else
-// 	{
-// 		ft_printf("\nConfirmed num. of received characters by the server: %d", received);
-// 		exit(0);
-// 	}
-// }
-
-// void	send_char_signals(pid_t server_pid, char c)
-// {
-// 	int		i;
-
-// 	i = 8;
-// 	while (i--)
-// 	{
-// 		if (c >> i & 1)
-// 		{
-// 			kill(server_pid, SIGUSR2);
-// 			if (DEBUG)
-// 				ft_printf("%c", '1');
-// 		}
-// 		else
-// 		{
-// 			kill(server_pid, SIGUSR1);
-// 			if (DEBUG)
-// 				ft_printf("%c", '0');
-// 		}
-// 		usleep(MICROSECS);
-// 	}
-// 	if (DEBUG)
-// 		ft_printf("%c", ' ');
-// }
-
-// void	send_end_signal(pid_t server_pid)
-// {
-
-// 	ft_printf("\nantes de enviar señal END TRASMISION");
-
-// 	send_char_signals(server_pid, END_TRANSMISSION);
-
-// 	ft_printf("\nenviada señal END TRASMISION");
-// }
-
-// void	send_string(int pid, char *str)
-// {
-// 	char	c;
-
-// 	if (DEBUG)
-// 		ft_printf("\nSending bits:\n");
-// 	while (*str)
-// 	{
-// 		c = *str++;
-// 		send_char_signals(pid, c);
-// 	}
-// 	send_end_signal(pid);
-// }
-
-// int	main(int argc, char **argv)
-// {
-// 	pid_t server_pid;
-	
-// 	if (DEBUG)
-// 		ft_printf("\nStarting CLIENT");
-// 	if (argc != 3 || !ft_strlen(argv[2]))
-// 		return (1);
-// 	check_pid_str_is_digit(argv[1]);
-// 	server_pid = (pid_t)ft_atoi(argv[1]);
-// 	check_pid_is_listening(server_pid);
-
-
-
-
-	
-// 	ft_printf("\nTrying to send %d characters from the string: \"%s\"", ft_strlen(argv[2]), argv[2]);
-	
-	
-// 	signal(SIGUSR1, action);
-// 	signal(SIGUSR2, action);
-// 	send_string(server_pid, argv[2]);
-// 	while (1)
-// 		pause();
-// 	return (0);
-// }
+//TODO:
+//comprobar orden de envio de bits y recepción en el servidor. Pq la última vez parece que el servidor no agrupó correctamente en bloques de 8
