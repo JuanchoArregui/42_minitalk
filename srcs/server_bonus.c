@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jarregui <jarregui@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jarregui <jarregui@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 13:35:33 by jarregui          #+#    #+#             */
-/*   Updated: 2024/08/22 15:20:16 by jarregui         ###   ########.fr       */
+/*   Updated: 2024/08/23 00:27:54 by jarregui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ void	handle_signal(int sig, siginfo_t *info, void *context)
 	(void)context;
 	if (!client_pid)
 		client_pid = info->si_pid;
-	kill(client_pid, SIGUSR1); //confirmamos recepción bit
 
 	print_bit_signal(bit_index, sig);
 	current_char |= (sig == SIGUSR1);
@@ -58,6 +57,7 @@ void	handle_signal(int sig, siginfo_t *info, void *context)
 	}
 	else
 		current_char <<= 1;
+	kill(client_pid, SIGUSR1);
 }
 
 int main (void)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minitalk.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jarregui <jarregui@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jarregui <jarregui@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 20:11:51 by jarregui          #+#    #+#             */
-/*   Updated: 2024/08/22 13:04:07 by jarregui         ###   ########.fr       */
+/*   Updated: 2024/08/22 22:06:40 by jarregui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,10 @@ typedef struct s_com_state
 	int				server_checked;
 	int				char_length;
 	int				char_index;
-	unsigned char	temp_char;
 	int				bit_index;
+	int				sent_chars;
+	int				sent_bits;
+	int				confirmed_bits;
 }	t_com_state;
 
 #endif
