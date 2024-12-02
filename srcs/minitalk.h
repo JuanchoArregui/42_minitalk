@@ -6,7 +6,7 @@
 /*   By: jarregui <jarregui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 20:11:51 by jarregui          #+#    #+#             */
-/*   Updated: 2024/08/22 13:04:07 by jarregui         ###   ########.fr       */
+/*   Updated: 2024/12/02 19:03:38 by jarregui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,12 @@
 # include <stdio.h>
 # include <stdlib.h>
 
-#ifndef DEBUG
-#define DEBUG 0
-#endif
+# ifndef DEBUG
+#  define DEBUG 0
+# endif
 
-#define MICROSECS 100
-#define END_TRANSMISSION '\0'
+# define MICROSECS 100
+# define END_TRANSMISSION '\0'
 
 typedef struct s_com_state
 {
@@ -39,5 +39,11 @@ typedef struct s_com_state
 	unsigned char	temp_char;
 	int				bit_index;
 }	t_com_state;
+
+typedef struct s_msg_list
+{
+	char				ch;
+	struct s_msg_list	*next;
+}	t_msg_list;
 
 #endif

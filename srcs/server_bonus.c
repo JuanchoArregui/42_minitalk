@@ -6,7 +6,7 @@
 /*   By: jarregui <jarregui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 13:35:33 by jarregui          #+#    #+#             */
-/*   Updated: 2024/08/22 15:20:16 by jarregui         ###   ########.fr       */
+/*   Updated: 2024/12/02 17:49:31 by jarregui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ void	print_bit_signal(int bit_index, int signal)
 			write(1, "1", 1);
 		else if (signal == SIGUSR2)
 			write(1, "0", 1);
+		if (bit_index == 7)
+			write(1, " - ", 3);
 	}
 }
 
@@ -34,8 +36,6 @@ void	handle_signal(int sig, siginfo_t *info, void *context)
 	(void)context;
 	if (!client_pid)
 		client_pid = info->si_pid;
-	kill(client_pid, SIGUSR1); //confirmamos recepción bit
-
 	print_bit_signal(bit_index, sig);
 	current_char |= (sig == SIGUSR1);
 	bit_index++;
@@ -46,21 +46,26 @@ void	handle_signal(int sig, siginfo_t *info, void *context)
 			write(1, "\n", 1);
 			kill(client_pid, SIGUSR2);
 			client_pid = 0;
+			if (DEBUG)
+				ft_printf("\n✅ END of transmission\n");
 			return ;
 		}
 		else
 		{
-			write(1, " - ", 3);
 			write(1, &current_char, 1);
+			kill(client_pid, SIGUSR1);
 		}
 		bit_index = 0;
 		current_char = 0;
 	}
 	else
+	{
+		kill(client_pid, SIGUSR1);
 		current_char <<= 1;
+	}
 }
 
-int main (void)
+int main(void)
 {
 	struct sigaction	s_sigaction;
 

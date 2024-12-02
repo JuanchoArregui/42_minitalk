@@ -6,7 +6,7 @@
 #    By: jarregui <jarregui@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/10 19:32:00 by jarregui          #+#    #+#              #
-#    Updated: 2024/08/08 11:29:33 by jarregui         ###   ########.fr        #
+#    Updated: 2024/12/02 16:34:21 by jarregui         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -103,3 +103,5 @@ fcleanlibs:
 re: fclean all
 
 .PHONY: all bonus clean cleanlibs fclean fcleanlibs re
+
+# Para ver comentarios --> make CFLAGS+=" -DDEBUG=1"

@@ -6,7 +6,7 @@
 /*   By: jarregui <jarregui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 17:31:44 by jarregui          #+#    #+#             */
-/*   Updated: 2024/08/22 14:07:43 by jarregui         ###   ########.fr       */
+/*   Updated: 2024/12/02 19:52:58 by jarregui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ int	main(int argc, char *argv[])
 
 	if (argc != 3)
 	{
-		ft_printf("Error. Usage: ./client <server pid> <message>\n");
+		ft_printf("❌ Error. Correct usage is: ./client <server pid> <message>\n");
 		exit(0);
 	}
 	server_pid = ft_atoi(argv[1]);

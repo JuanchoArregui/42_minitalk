@@ -6,13 +6,13 @@
 /*   By: jarregui <jarregui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 17:31:44 by jarregui          #+#    #+#             */
-/*   Updated: 2024/08/22 15:25:44 by jarregui         ###   ########.fr       */
+/*   Updated: 2024/12/02 18:06:59 by jarregui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-t_com_state	com;
+t_com_state	g_com;
 
 void	print_char_to_send(unsigned char character)
 {
@@ -38,14 +38,12 @@ void	print_bit_to_send(int bit)
 	}
 }
 
-
 void	print_bit(int current_bit)
 {
-	if (com.bit_index == 7)
-		print_char_to_send(com.message[com.char_index]);
+	if (g_com.bit_index == 7)
+		print_char_to_send(g_com.message[g_com.char_index]);
 	print_bit_to_send(current_bit);
 }
-
 
 void	check_server(int check)
 {
@@ -55,12 +53,12 @@ void	check_server(int check)
 			ft_printf("\n❌ ERROR: PID doesnt exist or not listening\n");
 		exit(0);
 	} 
-	else if (!com.server_checked)
+	else if (!g_com.server_checked)
 	{
-		com.server_checked = com.server_pid;
+		g_com.server_checked = g_com.server_pid;
 		if (DEBUG)
 			ft_printf("\n✅ SERVER with PID: %d is listening\n",
-				com.server_checked);
+				g_com.server_checked);
 	}
 }
 
@@ -84,30 +82,25 @@ pid_t	check_pid(const char *pid_string)
 	return (server_pid);
 }
 
-
-
-
-
-
 void	send_current_bit_signal()
 {
 	int		current_bit;
 	int		check;
 
-	current_bit = (com.message[com.char_index] >> com.bit_index) & 1;
+	current_bit = (g_com.message[g_com.char_index] >> g_com.bit_index) & 1;
 	if (current_bit == 1)
-		check = kill(com.server_pid, SIGUSR1);
+		check = kill(g_com.server_pid, SIGUSR1);
 	else
-		check = kill(com.server_pid, SIGUSR2);
+		check = kill(g_com.server_pid, SIGUSR2);
 	check_server(check);
 	print_bit(current_bit);
 
-	com.bit_index--;
+	g_com.bit_index--;
 	// Si todos los bits de un carácter han sido enviados, pasar al siguiente carácter
-	if (com.bit_index < 0)
+	if (g_com.bit_index < 0)
 	{
-		com.bit_index = 7;
-		com.char_index++;
+		g_com.bit_index = 7;
+		g_com.char_index++;
 	}
 
 }
@@ -117,7 +110,7 @@ void	handle_read_receipt(int signal)
 	if (signal == SIGUSR1)
 	{
 		//Señal de confirmación de recepción de bit
-		if (com.char_index < com.char_length)	//Checar si hay que checar esto si el server envía señal única al fianl
+		if (g_com.char_index < g_com.char_length)	//Checar si hay que checar esto si el server envía señal única al fianl
 			send_current_bit_signal();
 		
 	}
@@ -125,7 +118,7 @@ void	handle_read_receipt(int signal)
 	{
 		//Señal de fin transmisión
 		if (DEBUG)
-			ft_printf("✅ Terminada transmisión bit 0\n");
+			ft_printf("✅ Confirmado fin transmisión mensaje\n");
 	}
 }
 
@@ -137,20 +130,20 @@ int	main(int argc, char *argv[])
 		ft_printf("Error. Usage: ./client <server pid> <message>\n");
 		exit(0);
 	}
-	com.message = argv[2];
-	com.server_pid = check_pid(argv[1]);
-	com.server_checked = 0;
-	com.char_index = 0;
-	com.char_length = (int)ft_strlen(argv[2]);
-	com.temp_char = com.message[0];//?? este creo que no lo uso
-	com.bit_index = 7;
+	g_com.message = argv[2];
+	g_com.server_pid = check_pid(argv[1]);
+	g_com.server_checked = 0;
+	g_com.char_index = 0;
+	g_com.char_length = (int)ft_strlen(argv[2]);
+	g_com.temp_char = g_com.message[0];//?? este creo que no lo uso
+	g_com.bit_index = 7;
 	signal(SIGUSR1, handle_read_receipt);
 	signal(SIGUSR2, handle_read_receipt);
 	if (DEBUG)
 		ft_printf("Client starting bit-by-bit message sending ✉️\n");
 	send_current_bit_signal();
 
-	while (com.char_index < com.char_length)
+	while (g_com.char_index < g_com.char_length)
 		pause();
 		
 	return (0);
