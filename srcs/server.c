@@ -6,21 +6,15 @@
 /*   By: jarregui <jarregui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 13:35:33 by jarregui          #+#    #+#             */
-/*   Updated: 2024/12/02 19:56:55 by jarregui         ###   ########.fr       */
+/*   Updated: 2024/12/16 14:04:56 by jarregui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
+t_msg_list	*g_msg_list = NULL;
 
-//TODO: revisar como se imprime la lista pq solo me imprime un caracter
-
-
-
-t_msg_list	g_msg_list; //la lista está definida como variable global
-//Mirar codigo de: https://github.com/blasdo/minitalk/blob/main/server.c
-
-void	print_and_clear_msg_list(t_msg_list *lst)
+void	print_and_clear_msg_list(t_msg_list **head)
 {
 	t_msg_list *current;
 	t_msg_list *next_node;
@@ -30,10 +24,7 @@ void	print_and_clear_msg_list(t_msg_list *lst)
 		write(1, "\n✅ TERMINADA TRANSMISION:", 24);
 		write(1, "\nESTE ES EL MENSAJE RECIBIDO:\n", 31);
 	}
-	current = lst->next;
-	write(1, &lst->ch, 1);
-	lst->ch = 0;
-	lst->next = NULL;
+	current = *head;
 	while (current)
 	{
 		if (current->ch != '\0')
@@ -42,26 +33,40 @@ void	print_and_clear_msg_list(t_msg_list *lst)
 		free(current); // Libera el nodo actual
 		current = next_node; // Pasa al siguiente nodo
 	}
+	*head = NULL; // Resetea el puntero principal a NULL
 	write(1, "\n", 1); // Salto de línea
 }
 
-void	ft_msg_list_add_char(t_msg_list *lst, char ch)
+void	ft_msg_list_add_char(t_msg_list **head, char ch)
 {
+	t_msg_list *current;
 	t_msg_list	*new_char;
 
-	if (!lst->ch)
-		lst->ch = ch;
+	new_char = malloc(sizeof(t_msg_list));
+	if (!new_char)
+	{
+		printf("ERROR: malloc failed");
+		exit(EXIT_FAILURE);
+	}
+	new_char->ch = ch;
+	new_char->next = NULL;
+
+	if (!*head)
+		*head = new_char; // Si la lista está vacía, apunta al nuevo nodo
 	else
 	{
-		new_char = malloc(sizeof(t_msg_list));
-		new_char->ch = ch;
-		new_char->next = NULL;
-		while (lst->next)
-			lst = (lst)->next;	// Avanzas al siguiente nodo
-		lst->next = new_char;	// Añades el nuevo nodo al final
+		current = *head;
+		while (current->next)
+			current = current->next; // Avanza hasta el último nodo
+		current->next = new_char;   // Añade el nuevo nodo al final
 	}
+
+
+	printf("\nLIST-->añadido %c", ch);
+
+
 	if (ch == END_TRANSMISSION)
-		print_and_clear_msg_list(lst);
+		print_and_clear_msg_list(head);
 }
 
 void	print_bit_signal(int bit_index, int signal)
@@ -93,6 +98,11 @@ void	handle_signal(int signal)
 			write(1, &current_char, 1);
 		}
 		//añadimos current_char a la lista:
+
+
+		printf("\nrecibido ch guardando en lists: %c", current_char);
+		
+		
 		ft_msg_list_add_char(&g_msg_list, current_char);
 
 		bit_index = 0;
@@ -106,8 +116,6 @@ int	main(void)
 {
 	if (DEBUG)
 		ft_printf("PID: ");
-	g_msg_list.ch = '\0';
-	g_msg_list.next = NULL;
 	ft_printf("%d\n", getpid());
 	signal(SIGUSR1, handle_signal);
 	signal(SIGUSR2, handle_signal);
@@ -124,3 +132,6 @@ int	main(void)
 //
 //https://github.com/hanshazairi/42-minitalk
 //https://github.com/leogaudin/minitalk/tree/main
+
+
+//Mirar codigo de: https://github.com/blasdo/minitalk/blob/main/server.c
